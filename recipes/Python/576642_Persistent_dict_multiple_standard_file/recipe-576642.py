@@ -31,14 +31,12 @@ class PersistentDict(dict):
             return
         filename = self.filename
         tempname = filename + '.tmp'
-        fileobj = open(tempname, 'wb' if self.format=='pickle' else 'w')
         try:
-            self.dump(fileobj)
+            with open(tempname, 'wb' if self.format=='pickle' else 'w') as fileobj:
+                self.dump(fileobj)
         except Exception:
             os.remove(tempname)
-            raise
-        finally:
-            fileobj.close()
+        raise
         shutil.move(tempname, self.filename)    # atomic commit
         if self.mode is not None:
             os.chmod(self.filename, self.mode)
